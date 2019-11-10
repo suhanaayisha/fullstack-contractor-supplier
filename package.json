@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "postinstall": "npm install --prefix server && npm install --prefix frontend-app",
     "start": "concurrently \"cd backend && node server.js\" \"cd client && npm start\""
   },
   "keywords": [],
@@ -11,5 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "concurrently": "^5.0.0"
+  },
+  "engines": {
+    "node": "10.x"
   }
 }
