@@ -10,7 +10,7 @@ module.exports = function(app) {
     app.use(
       '/api',
       proxy({
-        target: 'http://localhost:3001',
+        target: 'https://fullstack-contractor-supplier.herokuapp.com/',
         changeOrigin: true,
       })
     );
