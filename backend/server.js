@@ -9,6 +9,8 @@ const userData = require('./user');
 const requestData = require('./request');
 const bidData = require('./bid')
 
+const ENV = process.env.NODE_ENV;
+
 const API_PORT = 3001;
 const app = new express();
 app.use(cors());
@@ -30,16 +32,11 @@ db.once('open', () => console.log('connected to the database'));
 
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-app.use(express.static(path.join(__dirname, '../client/build')))
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(logger('dev'));
 
-app.get('/', function (req, res) {
-  app.get('/*', function (req, res) {
-     res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
-   })
-  });
 
 router.get('/getData', (req, res) => {
     Data.find((err, data) => {
@@ -169,4 +166,13 @@ router.post('/deleteBidData', (req, res) => {
 
   app.use('/api', router);
 
-  // app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`))
+  if(ENV==='production'){
+    app.use(express.static(path.join(__dirname, '../client/build')));
+    app.use((req, res)=> {
+      
+         res.sendFile(path.join(__dirname, '../client/build/index.html'));
+      
+      });
+  }
+
+  app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`))

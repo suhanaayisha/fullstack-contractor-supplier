@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "npm install --prefix backend && npm install --prefix client",
-    "start": "concurrently \"cd backend && node server.js\" \"cd client && npm start\""
+    "dev": "concurrently \"cd backend && node server.js\" \"cd client && npm start\"",
+    "start": "node backend/server.js",
+    "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "keywords": [],
   "author": "",
