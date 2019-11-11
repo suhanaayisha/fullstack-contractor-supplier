@@ -7,7 +7,7 @@ export default class Supplier extends React.Component {
         data: [],
         biddata: [],
         userid: this.props.location.state.userid || this.props.location.userDetails.userid,
-        username: this.props.location.state.username || this.props.location.userDetails.userid,
+        username: this.props.location.state.username || this.props.location.userDetails.username,
         name: null,
         quantity: null,
         intervalIsSet: false,
@@ -83,8 +83,20 @@ export default class Supplier extends React.Component {
 
     render(){
         const { data } = this.state;
-        const userid = this.state.userid;
-        const username = this.state.username;
+        let userid;
+        let username;
+        if(this.state.userid){
+            userid = this.state.userid;
+        }else{
+            userid = this.props.location.userDetails.userid;
+        }
+        if(this.state.username){
+            username = this.state.username;
+        }else{
+            username = this.props.location.userDetails.username;
+        }
+    
+        console.log(username);
         return(
             <div>
                 <NavLink to='/supplier' activeClassName='is-active' exact={true}>Home</NavLink> 
