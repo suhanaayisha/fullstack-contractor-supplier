@@ -30,13 +30,13 @@ export default class Supplier extends React.Component {
       }
 
     getDataFromDb = () => {
-        fetch('http://localhost:3001/api/getRequestData')
+        fetch('./api/getRequestData')
           .then((data) => data.json())
           .then((res) => this.setState({ data: res.data }));
       };
     
     getBidDataFromDb = () => {
-        fetch('http://localhost:3001/api/getBidData')
+        fetch('./api/getBidData')
           .then((data) => data.json())
           .then((res) => this.setState({ biddata: res.data ,isFetching:true }));
       };
@@ -54,7 +54,7 @@ export default class Supplier extends React.Component {
                     console.log(data.price)
                     console.log(price)
                     if (price < data.price){
-                        axios.post('http://localhost:3001/api/deleteBidData', {
+                        axios.post('./deleteBidData', {
                             id: data._id,
                         });
 
@@ -68,7 +68,7 @@ export default class Supplier extends React.Component {
                         console.log("price is more than existing bid")
                     }
 
-                    axios.post('http://localhost:3001/api/putBidData', {
+                    axios.post('./api/putBidData', {
                   
                         reqid: reqid,
                         price: price
@@ -90,21 +90,25 @@ export default class Supplier extends React.Component {
                 {data.length <= 0
                     ? 'NO REQUESTS YET'
                     : data.map((dat) => (
+                        <div>
                         <li style={{ padding: '10px' }} key={dat.id}>
                         <span style={{ color: 'gray' }}> User Name: </span> {dat.username} <br />
                         <span style={{ color: 'gray' }}> Request Id: </span> {dat._id} <br />
                         <span style={{ color: 'gray' }}> Equipment: </span> {dat.equip} <br />
                         <span style={{ color: 'gray' }}> Quantity: </span>  {dat.quantity} <br />
                         </li>
+                        <form onSubmit={this.putDataToDB}>
+                            <input type="checkbox" name="reqid" value={dat._id}/>
+                            <label>Price</label>
+                            <input type="number" name="price"></input>
+                            <button>Place Your Bids</button>
+                        </form>
+                        
+                        </div>
+                            
+                        
                     ))}
                 </ul>
-                <form onSubmit={this.putDataToDB}>
-                    <label>Request Id</label>
-                    <input type="text" name="reqid"></input>
-                    <label>Price</label>
-                    <input type="number" name="price"></input>
-                    <button>Bid</button>
-                </form>
 
             </div>
         );
