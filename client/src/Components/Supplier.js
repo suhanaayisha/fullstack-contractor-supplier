@@ -95,7 +95,7 @@ export default class Supplier extends React.Component {
         }else{
             username = this.props.location.userDetails.username;
         }
-    
+        console.log("in supplier");
         console.log(username);
         return(
             <div>
