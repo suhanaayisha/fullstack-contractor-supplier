@@ -6,8 +6,8 @@ export default class Supplier extends React.Component {
     state = {
         data: [],
         biddata: [],
-        userid: this.props.location.state.userid,
-        username: this.props.location.state.username,
+        userid: this.props.location.state.userid || this.props.location.userDetails.userid,
+        username: this.props.location.state.username || this.props.location.userDetails.userid,
         name: null,
         quantity: null,
         intervalIsSet: false,
