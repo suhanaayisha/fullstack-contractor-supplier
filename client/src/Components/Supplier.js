@@ -105,13 +105,14 @@ export default class Supplier extends React.Component {
                             <label>Price</label>
                             <input type="number" name="price"></input>
                             <button>Place Your Bids</button>
-                            {  this.state.successfulSubmission ? 
-                                <div> 
-                                    <div>Bid Placed.</div> 
-                                </div> 
-                                : 
-                                " " }
                         </form>
+                        {  this.state.successfulSubmission ? 
+                            <div> 
+                                <div>Bid Placed.</div> 
+                            </div> 
+                            : 
+                            " " 
+                        }
                         
                         </div>
                             
