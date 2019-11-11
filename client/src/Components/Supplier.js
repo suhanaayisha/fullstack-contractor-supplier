@@ -45,6 +45,7 @@ export default class Supplier extends React.Component {
 
     putDataToDB = (e) => {
         e.preventDefault();
+        this.setState({successfulSubmission: false})
         let reqid =e.target.elements.reqid.value;
         let price =e.target.elements.price.value;
         // let biddata = this.state.biddata;
@@ -82,12 +83,21 @@ export default class Supplier extends React.Component {
 
     render(){
         const { data } = this.state;
-        
+        const userid = this.state.userid;
+        const username = this.state.username;
         return(
             <div>
-                <NavLink to='/supplier' activeClassName='is-active' exact={true}>Home</NavLink> <br/>
+                <NavLink to='/supplier' activeClassName='is-active' exact={true}>Home</NavLink> 
                 <NavLink to='/' activeClassName='is-active' exact={true}>Logout</NavLink> <br/>
-                <NavLink to='/bid' activeClassName='is-active' exact={true}>Bids</NavLink> 
+                <NavLink to={{
+                    pathname:'/bid',
+                    userDetails:{
+                         userid, 
+                         username
+                    }}}
+                    activeClassName='is-active' 
+                    exact={true}> Bids</NavLink> <br/>
+
                 <h1>Hello {this.state.username}</h1>
                 <ul>
                 {data.length <= 0
@@ -106,18 +116,18 @@ export default class Supplier extends React.Component {
                             <input type="number" name="price"></input>
                             <button>Place Your Bids</button>
                         </form>
-                        {  this.state.successfulSubmission ? 
-                            <div> 
-                                <div>Bid Placed.</div> 
-                            </div> 
-                            : 
-                            " " 
-                        }
                         
                         </div>
                             
                         
                     ))}
+                    {  this.state.successfulSubmission ? 
+                        <div> 
+                            <div>Bid Placed.</div> 
+                        </div> 
+                        : 
+                        " " 
+                    }
                 </ul>
 
             </div>

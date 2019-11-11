@@ -3,10 +3,18 @@ import axios from 'axios';
 import { NavLink} from 'react-router-dom';
 
 export default class Supplier extends React.Component {
-    state = {
-        data: [],
-        intervalIsSet: false
-      };
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: [],
+      userid: this.props.location.userDetails.userid,
+      username: this.props.location.userDetails.username,
+      intervalIsSet: false
+    };
+    
+  }
+  
+      
 
     componentDidMount() {
         this.getDataFromDb();
