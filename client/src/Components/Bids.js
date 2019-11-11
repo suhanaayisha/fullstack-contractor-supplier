@@ -18,7 +18,7 @@ export default class Supplier extends React.Component {
       
 
     componentDidMount() {
-        this.getDataBidFromDb();
+        this.getBidDataFromDb();
         this.getReqDataFromDb();
         if (!this.state.intervalIsSet) {
           let interval = setInterval(this.getDataFromDb, 1000);
