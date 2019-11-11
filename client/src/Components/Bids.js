@@ -39,7 +39,7 @@ export default class Supplier extends React.Component {
       
 
     render(){
-        console.log(this.state)
+        console.log(this.state.username)
         const { data } = this.state;
         
         return(
