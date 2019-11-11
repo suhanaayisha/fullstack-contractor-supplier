@@ -23,7 +23,7 @@ export default class Supplier extends React.Component {
       }
 
     getDataFromDb = () => {
-        fetch('http://localhost:3001/api/getBidData')
+        fetch('./api/getBidData')
           .then((data) => data.json())
           .then((res) => this.setState({ data: res.data }));
       };
@@ -38,7 +38,7 @@ export default class Supplier extends React.Component {
             <div>
                 <NavLink to='/supplier' activeClassName='is-active' exact={true}>Home</NavLink> 
                 <NavLink to='/' activeClassName='is-active' exact={true}>Logout</NavLink> 
-                <h1>Bids Page</h1>
+                <h1>Bids Placed</h1>
                 <ul>
                 {data.length <= 0
                     ? 'No Bids yet'
@@ -50,7 +50,6 @@ export default class Supplier extends React.Component {
                         </li>
                     ))}
                 </ul>
-                <h2>Awarded Bids</h2>
 
             </div>
         );

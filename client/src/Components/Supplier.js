@@ -11,7 +11,8 @@ export default class Supplier extends React.Component {
         name: null,
         quantity: null,
         intervalIsSet: false,
-        isFetching:false
+        isFetching:false,
+        successfulSubmission: false
       };
 
     componentDidMount() {
@@ -73,6 +74,8 @@ export default class Supplier extends React.Component {
                         reqid: reqid,
                         price: price
                     });
+                    this.setState({successfulSubmission: true})
+                    this.form.reset() 
                    }
                 }
                     
@@ -102,6 +105,12 @@ export default class Supplier extends React.Component {
                             <label>Price</label>
                             <input type="number" name="price"></input>
                             <button>Place Your Bids</button>
+                            {  this.state.successfulSubmission ? 
+                                <div> 
+                                    <div>Bid Placed.</div> 
+                                </div> 
+                                : 
+                                " " }
                         </form>
                         
                         </div>
