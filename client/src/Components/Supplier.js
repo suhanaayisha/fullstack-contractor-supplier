@@ -88,12 +88,12 @@ export default class Supplier extends React.Component {
         if(this.state.userid){
             userid = this.state.userid;
         }else{
-            userid = this.props.location.userDetails.userid;
+            userid = "";
         }
         if(this.state.username){
             username = this.state.username;
         }else{
-            username = this.props.location.userDetails.username;
+            username = "";
         }
         console.log("in supplier");
         console.log(username);
@@ -110,7 +110,7 @@ export default class Supplier extends React.Component {
                     activeClassName='is-active' 
                     exact={true}> Bids</NavLink> <br/>
 
-                <h1>Hello {this.state.username}</h1>
+                <h1>Hello {username}</h1>
                 <ul>
                 {data.length <= 0
                     ? 'NO REQUESTS YET'
