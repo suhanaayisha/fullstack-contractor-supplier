@@ -5,7 +5,7 @@ import { NavLink} from 'react-router-dom';
 export default class Supplier extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
+    state = {
       bidData: [],
       reqData: [],
       userid: this.props.location.userDetails.userid,
@@ -49,7 +49,7 @@ export default class Supplier extends React.Component {
     render(){
         console.log(this.state.username)
         console.log(this.state.userid)
-        console.log("no")
+        console.log("yes")
         const { bidData,reqData } = this.state;
         const userid = this.state.userid;
         const username = this.state.username;

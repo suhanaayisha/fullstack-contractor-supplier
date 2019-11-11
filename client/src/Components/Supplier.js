@@ -82,21 +82,21 @@ export default class Supplier extends React.Component {
                     
 
     render(){
-        console.log("in supplier first ");
         const { data } = this.state;
         let userid;
         let username;
+        console.log("in supplier second");
         if(this.state.userid){
             userid = this.state.userid;
         }else{
-            userid = "";
+            userid = this.props.location.userDetails.userid;
         }
         if(this.state.username){
             username = this.state.username;
         }else{
-            username = "";
+            username = this.props.location.userDetails.username;
         }
-        console.log("in supplier ");
+        console.log("in supplier");
         console.log(username);
         return(
             <div>
