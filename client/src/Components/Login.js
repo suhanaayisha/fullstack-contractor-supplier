@@ -22,7 +22,7 @@ export default class Login extends React.Component {
       }
 
     getDataFromDb = () => {
-        fetch('http://localhost:3001/api/getUserData')
+        fetch('/api/getUserData')
           .then((data) => data.json())
           .then((res) => this.setState({ users: res.data, isFetching:true }));
       };
