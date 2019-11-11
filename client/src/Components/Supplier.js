@@ -82,6 +82,7 @@ export default class Supplier extends React.Component {
                     
 
     render(){
+        console.log("in supplier first ");
         const { data } = this.state;
         let userid;
         let username;
@@ -95,7 +96,7 @@ export default class Supplier extends React.Component {
         }else{
             username = "";
         }
-        console.log("in supplier");
+        console.log("in supplier ");
         console.log(username);
         return(
             <div>
