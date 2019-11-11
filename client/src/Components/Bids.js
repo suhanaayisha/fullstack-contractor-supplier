@@ -41,10 +41,16 @@ export default class Supplier extends React.Component {
     render(){
         console.log(this.state.username)
         const { data } = this.state;
-        
+        const userid = this.state.userid;
+        const username = this.state.username;
         return(
             <div>
-                <NavLink to='/supplier' activeClassName='is-active' exact={true}>Home</NavLink> <br/>
+                <NavLink to={{
+                  pathname:'/supplier',
+                  userDetails:{
+                      userid, 
+                      username
+                  }}}>Home</NavLink> <br/>
                 <NavLink to='/' activeClassName='is-active' exact={true}>Logout</NavLink> 
                 <h1>Bids Placed</h1>
                 <ul>
