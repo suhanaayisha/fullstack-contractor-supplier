@@ -28,7 +28,7 @@ export default class SignUp extends React.Component {
     }
 
     getDataFromDb = () => {
-        fetch('http://localhost:3001/api/getUserData')
+        fetch('./api/getUserData')
           .then((data) => data.json())
           .then((res) => this.setState({ users: res.data, isFetching:true }));
       };
@@ -51,7 +51,7 @@ export default class SignUp extends React.Component {
         
         if(this.state.isFetching){
             if(!(this.state.users.find((user) => user.username === username)) && (password1 == password2) ){
-                axios.post('http://localhost:3001/api/putUserData', {
+                axios.post('./api/putUserData', {
                     username: username,
                     password: password1,
                     usertype: usertype

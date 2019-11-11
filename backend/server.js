@@ -4,15 +4,23 @@ var cors = require('cors');
 const logger = require('morgan');
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser') // to collect data from browser
+
+const ENV = process.env.NODE_ENV;
+const API_PORT = process.env.PORT || 3001;
+
+const app = new express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`))
+
 const Data = require('./data');
 const userData = require('./user');
 const requestData = require('./request');
 const bidData = require('./bid')
 
-const ENV = process.env.NODE_ENV;
-
-const API_PORT = process.env.PORT || 3001;
-const app = new express();
 app.use(cors());
 const router = express.Router();
 
@@ -32,9 +40,6 @@ db.once('open', () => console.log('connected to the database'));
 
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
 app.use(logger('dev'));
 
 
@@ -175,4 +180,4 @@ router.post('/deleteBidData', (req, res) => {
       });
   }
 
-  app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`))
+  module.exports = app;
