@@ -11,7 +11,7 @@ const bidData = require('./bid')
 
 const ENV = process.env.NODE_ENV;
 
-const API_PORT = 3001;
+const API_PORT = process.env.PORT || 3001;
 const app = new express();
 app.use(cors());
 const router = express.Router();
