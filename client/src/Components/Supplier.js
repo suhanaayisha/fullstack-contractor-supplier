@@ -85,8 +85,8 @@ export default class Supplier extends React.Component {
         
         return(
             <div>
-                <NavLink to='/supplier' activeClassName='is-active' exact={true}>Home</NavLink> 
-                <NavLink to='/' activeClassName='is-active' exact={true}>Logout</NavLink> 
+                <NavLink to='/supplier' activeClassName='is-active' exact={true}>Home</NavLink> <br/>
+                <NavLink to='/' activeClassName='is-active' exact={true}>Logout</NavLink> <br/>
                 <NavLink to='/bid' activeClassName='is-active' exact={true}>Bids</NavLink> 
                 <h1>Hello {this.state.username}</h1>
                 <ul>
