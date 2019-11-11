@@ -47,27 +47,27 @@ export default class Supplier extends React.Component {
         e.preventDefault();
         let reqid =e.target.elements.reqid.value;
         let price =e.target.elements.price.value;
-        let biddata = this.state.biddata;
+        // let biddata = this.state.biddata;
         if(this.state.isFetching){
             
-            if (biddata.length > 0 && biddata.find(data => data.reqid === reqid)){ 
-                    let data = biddata.find(data => data.reqid === reqid);
-                    console.log(data.price)
-                    console.log(price)
-                    if (price < data.price){
-                        axios.post('./deleteBidData', {
-                            id: data._id,
-                        });
+            // if (biddata.length > 0 && biddata.find(data => data.reqid === reqid)){ 
+            //         let data = biddata.find(data => data.reqid === reqid);
+            //         console.log(data.price)
+            //         console.log(price)
+            //         if (price < data.price){
+            //             axios.post('./deleteBidData', {
+            //                 id: data._id,
+            //             });
 
-                        // axios.post('http://localhost:3001/api/putBidData', {
+            //             // axios.post('http://localhost:3001/api/putBidData', {
           
-                        //     reqid: reqid,
-                        //     price: price
-                        // });
-                       }
-                    } else {
-                        console.log("price is more than existing bid")
-                    }
+            //             //     reqid: reqid,
+            //             //     price: price
+            //             // });
+            //            }
+            //         } else {
+            //             console.log("price is more than existing bid")
+            //         }
 
                     axios.post('./api/putBidData', {
                   
