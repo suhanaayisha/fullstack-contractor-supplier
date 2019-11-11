@@ -17,9 +17,9 @@ app.use(bodyParser.json());
 app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`))
 
 const Data = require('./data');
-const userData = require('./user');
-const requestData = require('./request');
-const bidData = require('./bid')
+const userData = require('./schema/user');
+const requestData = require('./schema/request');
+const bidData = require('./schema/bid')
 
 app.use(cors());
 const router = express.Router();

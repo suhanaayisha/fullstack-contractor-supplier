@@ -28,7 +28,7 @@ export default class Contractor extends React.Component {
       }
 
     getDataFromDb = () => {
-        fetch('http://localhost:3001/api/getRequestData')
+        fetch('./api/getRequestData')
           .then((data) => data.json())
           .then((res) => this.setState({ data: res.data }));
       };
@@ -41,7 +41,7 @@ export default class Contractor extends React.Component {
         let quantity =e.target.elements.quantity.value;
 
     
-        axios.post('http://localhost:3001/api/putRequestData', {
+        axios.post('./api/putRequestData', {
             userid: userid,
             username: username,
             equip: equip,
@@ -51,7 +51,7 @@ export default class Contractor extends React.Component {
     
     deleteReq = (reqid) => {
         console.log(reqid)
-        axios.delete('http://localhost:3001/api/deleteRequestData', {
+        axios.delete('./api/deleteRequestData', {
             reqid: reqid,
         });
     }
