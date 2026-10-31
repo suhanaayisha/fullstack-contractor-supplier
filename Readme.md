@@ -4,7 +4,23 @@ A small full-stack marketplace where **contractors** request construction equipm
 
 > **Note:** This started as a trial project to practise full-stack development with React, Node/Express and MongoDB. See [Known limitations and next steps](#known-limitations-and-next-steps) for what I'd improve next.
 
-> **Live demo:** it's hosted on Render's free plan, which sleeps when nobody uses the app. The first visit after a while takes about a minute to load.
+**Live demo: [contractor-supplier.onrender.com](https://contractor-supplier.onrender.com)**
+
+> It's hosted on Render's free plan, which sleeps when nobody uses the app. The first visit after a while takes about a minute to load.
+
+## Screenshots
+
+| Login | Sign up |
+|---|---|
+| ![Login page](public/login.png) | ![Sign up page](public/sign-up.png) |
+
+| Contractor: requests and bids | Supplier: open requests |
+|---|---|
+| ![Contractor dashboard](public/contractor.png) | ![Supplier dashboard](public/supplier.png) |
+
+| Supplier: bids placed |
+|---|
+| ![Supplier bids page](public/bids.png) |
 
 ## What it does
 
