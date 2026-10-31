@@ -316,3 +316,190 @@ h1, h2, h3 {
     border: 1px dashed var(--border);
     border-radius: var(--radius);
 }
+
+/* ---------- Delete buttons & confirmation modal ---------- */
+
+.card {
+    position: relative;
+}
+
+.btn-secondary {
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+    background: var(--bg);
+}
+
+.btn-danger {
+    background: var(--danger);
+}
+
+.btn-danger:hover {
+    background: #a82f2f;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-delete {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    font-size: 1.05rem;
+    color: var(--muted);
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-delete:hover {
+    color: var(--danger);
+    background: var(--danger-soft);
+    border-color: var(--danger-soft);
+}
+
+.card-title {
+    padding-right: 40px;
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(16, 24, 40, 0.45);
+}
+
+.modal {
+    width: 100%;
+    max-width: 420px;
+    background: var(--surface);
+    border-radius: 14px;
+    box-shadow: 0 20px 48px rgba(16, 24, 40, 0.2);
+    padding: 24px;
+}
+
+.modal-title {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.modal-message {
+    color: var(--muted);
+    margin: 0;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 24px;
+}
+
+/* ---------- Status badges & bids on request cards ---------- */
+
+.badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    color: var(--muted);
+    background: var(--bg);
+}
+
+.badge-open,
+.badge-pending {
+    color: var(--primary);
+    background: var(--primary-soft);
+}
+
+.badge-accepted {
+    color: var(--success);
+    background: var(--success-soft);
+}
+
+.badge-rejected {
+    color: var(--danger);
+    background: var(--danger-soft);
+}
+
+.card-status {
+    margin-bottom: 12px;
+}
+
+.bid-section-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin: 0 0 8px;
+}
+
+.bid-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.bid-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.bid-row-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.bid-row-price {
+    font-weight: 700;
+}
+
+.bid-row-supplier {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.bid-row-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+.btn-success {
+    background: var(--success);
+}
+
+.btn-success:hover {
+    background: #187047;
+}

@@ -3,6 +3,9 @@ import axios from 'axios';
 import { NavLink, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import { formatDate, today } from '../utils/date';
+import ConfirmModal from './ConfirmModal';
+import { FiTrash2 } from 'react-icons/fi';
+import { formatPrice } from '../utils/currency';
 
 export default function Contractor() {
     const location = useLocation();
@@ -10,6 +13,14 @@ export default function Contractor() {
     const username = location.state?.username;
     const [data, setData] = useState([]);
     const [equipment, setEquipment] = useState([]);
+    const [requestToDelete, setRequestToDelete] = useState(null);
+    const [deleting, setDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState(null);
+    const [bids, setBids] = useState([]);
+    // { bid, status } while the accept/reject confirmation is open
+    const [bidDecision, setBidDecision] = useState(null);
+    const [deciding, setDeciding] = useState(false);
+    const [decisionError, setDecisionError] = useState(null);
 
     useEffect(() => {
         fetch('./api/getEquipment')
@@ -19,14 +30,17 @@ export default function Contractor() {
 
     useEffect(() => {
         const getDataFromDb = () => {
-            fetch('./api/getRequestData')
+            fetch(`./api/getRequestData?userid=${encodeURIComponent(userid)}`)
                 .then((data) => data.json())
                 .then((res) => setData(res.data));
+            fetch(`./api/getBidData?contractorid=${encodeURIComponent(userid)}`)
+                .then((data) => data.json())
+                .then((res) => setBids(res.data));
         };
         getDataFromDb();
         const interval = setInterval(getDataFromDb, 1000);
         return () => clearInterval(interval);
-    }, []);
+    }, [userid]);
 
     const putDataToDB = (e) => {
         e.preventDefault();
@@ -43,7 +57,55 @@ export default function Contractor() {
         });
     };
 
+    const closeDeleteModal = () => {
+        setRequestToDelete(null);
+        setDeleteError(null);
+    };
+
+    const deleteRequest = () => {
+        setDeleting(true);
+        setDeleteError(null);
+        axios.delete('./api/deleteRequestData', { data: { id: requestToDelete._id, userid: userid } })
+            .then((res) => {
+                if (!res.data.success) throw new Error();
+                setData((requests) => requests.filter((request) => request._id !== requestToDelete._id));
+                closeDeleteModal();
+            })
+            .catch(() => setDeleteError('Could not delete the request. Please try again.'))
+            .finally(() => setDeleting(false));
+    };
+
+    const closeDecisionModal = () => {
+        setBidDecision(null);
+        setDecisionError(null);
+    };
+
+    const decideBid = () => {
+        const { bid, status } = bidDecision;
+        setDeciding(true);
+        setDecisionError(null);
+        axios.post('./api/updateBidStatus', { id: bid._id, status: status, userid: userid })
+            .then((res) => {
+                if (!res.data.success) {
+                    setDecisionError(typeof res.data.error === 'string' ? res.data.error : 'Could not update the bid. Please try again.');
+                    return;
+                }
+                setBids((bids) => bids.map((b) => {
+                    if (b._id === bid._id) return { ...b, status: status };
+                    if (status === 'accepted' && b.reqid === bid.reqid) return { ...b, status: 'rejected' };
+                    return b;
+                }));
+                if (status === 'accepted') {
+                    setData((requests) => requests.map((r) => r._id === bid.reqid ? { ...r, status: 'closed' } : r));
+                }
+                closeDecisionModal();
+            })
+            .catch(() => setDecisionError('Could not update the bid. Please try again.'))
+            .finally(() => setDeciding(false));
+    };
+
     const myRequests = data.filter((dat) => dat.userid === userid);
+    const bidsFor = (reqid) => bids.filter((bid) => bid.reqid === reqid);
 
     return (
         <div>
@@ -86,17 +148,67 @@ export default function Contractor() {
                     : <ul className="card-grid">
                         {myRequests.map((dat, ind) => (
                             <li className="card" key={dat._id}>
+                                <button className="btn-delete" onClick={() => setRequestToDelete(dat)} aria-label="Delete request" title="Delete request"><FiTrash2 color='red'/></button>
                                 <h3 className="card-title">{dat.equip}</h3>
+                                <div className="card-status">
+                                    <span className={`badge badge-${dat.status || 'open'}`}>{dat.status || 'open'}</span>
+                                </div>
                                 <dl className="details">
                                     <dt>Quantity</dt>
                                     <dd>{dat.quantity}</dd>
                                     <dt>Required by</dt>
                                     <dd>{formatDate(dat.requiredBy)}</dd>
                                 </dl>
+                                <div className="card-actions">
+                                    <p className="bid-section-title">Bids</p>
+                                    {bidsFor(dat._id).length <= 0
+                                        ? <p className="hint">No bids yet.</p>
+                                        : <ul className="bid-list">
+                                            {bidsFor(dat._id).map((bid) => (
+                                                <li className="bid-row" key={bid._id}>
+                                                    <div className="bid-row-info">
+                                                        <span className="bid-row-price">{formatPrice(bid.price)}</span>
+                                                        <span className="bid-row-supplier">{bid.suppliername || 'Unknown supplier'}</span>
+                                                    </div>
+                                                    <div className="bid-row-actions">
+                                                        {dat.status !== 'closed' && bid.status === 'pending'
+                                                            ? <>
+                                                                <button className="btn btn-sm btn-success" onClick={() => setBidDecision({ bid, status: 'accepted' })}>Accept</button>
+                                                                <button className="btn btn-sm btn-secondary" onClick={() => setBidDecision({ bid, status: 'rejected' })}>Reject</button>
+                                                            </>
+                                                            : <span className={`badge badge-${bid.status}`}>{bid.status}</span>}
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>}
+                                </div>
                             </li>
                         ))}
                     </ul>}
             </main>
+            {requestToDelete &&
+                <ConfirmModal
+                    title="Delete request?"
+                    message={`Your request for ${requestToDelete.quantity} × ${requestToDelete.equip} and any bids placed on it will be permanently removed.`}
+                    busy={deleting}
+                    error={deleteError}
+                    onConfirm={deleteRequest}
+                    onCancel={closeDeleteModal}
+                />}
+            {bidDecision &&
+                <ConfirmModal
+                    title={bidDecision.status === 'accepted' ? 'Accept bid?' : 'Reject bid?'}
+                    message={bidDecision.status === 'accepted'
+                        ? `Accept ${bidDecision.bid.suppliername || 'this supplier'}'s bid of ${formatPrice(bidDecision.bid.price)}? All other bids on this request will be rejected and the request will be closed.`
+                        : `Reject ${bidDecision.bid.suppliername || 'this supplier'}'s bid of ${formatPrice(bidDecision.bid.price)}?`}
+                    confirmLabel={bidDecision.status === 'accepted' ? 'Accept bid' : 'Reject bid'}
+                    busyLabel="Saving…"
+                    variant={bidDecision.status === 'accepted' ? 'success' : 'danger'}
+                    busy={deciding}
+                    error={decisionError}
+                    onConfirm={decideBid}
+                    onCancel={closeDecisionModal}
+                />}
         </div>
     );
 }

@@ -5,6 +5,9 @@ const Schema = mongoose.Schema;
 const DataSchema = new Schema(
   {
     reqid: String,
+    supplierid: String,
+    suppliername: String,
+    status: { type: String, enum: ['pending', 'accepted', 'rejected'], default: 'pending' },
     price: String,
   },
   { timestamps: true }

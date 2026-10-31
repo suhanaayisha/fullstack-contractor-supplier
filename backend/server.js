@@ -83,8 +83,10 @@ router.get('/getUserData', async (req, res) => {
     .catch((err) => res.json({ success: false, error: err }));
 });
 
+// ?userid=... returns only that contractor's requests
 router.get('/getRequestData', async (req, res) => {
-  requestData.find()
+  const filter = req.query.userid ? { userid: req.query.userid } : {};
+  requestData.find(filter)
     .then((data) => res.json({ success: true, data: data }))
     .catch((err) => res.json({ success: false, error: err }));
   // console.log(requests)
@@ -96,10 +98,48 @@ router.get('/getEquipment', (req, res) => {
     .catch((err) => res.json({ success: false, error: err }));
 });
 
+// ?supplierid=... returns only that supplier's bids
+// ?contractorid=... returns the bids placed on that contractor's requests
 router.get('/getBidData', async (req, res) => {
-  bidData.find()
-    .then((data) => res.json({ success: true, data: data }))
-    .catch((err) => res.json({ success: false, error: err }));
+  try {
+    let filter = {};
+    if (req.query.supplierid) {
+      filter = { supplierid: req.query.supplierid };
+    } else if (req.query.contractorid) {
+      const requests = await requestData.find({ userid: req.query.contractorid }, '_id');
+      filter = { reqid: { $in: requests.map((request) => String(request._id)) } };
+    }
+    const data = await bidData.find(filter).sort({ createdAt: 1 });
+    res.json({ success: true, data: data });
+  } catch (err) {
+    res.json({ success: false, error: err });
+  }
+});
+
+// contractor accepts or rejects a bid on one of their requests;
+// accepting rejects the other pending bids and closes the request
+router.post('/updateBidStatus', async (req, res) => {
+  const { id, status, userid } = req.body;
+  if (!['accepted', 'rejected'].includes(status)) {
+    return res.json({ success: false, error: 'Status must be accepted or rejected' });
+  }
+  try {
+    const bid = await bidData.findById(id);
+    const request = bid && await requestData.findOne({ _id: bid.reqid, userid: userid });
+    if (!request) return res.json({ success: false, error: 'Bid not found' });
+    if (request.status === 'closed') return res.json({ success: false, error: 'This request is already closed' });
+
+    bid.status = status;
+    await bid.save();
+    if (status === 'accepted') {
+      await bidData.updateMany({ reqid: bid.reqid, _id: { $ne: bid._id } }, { status: 'rejected' });
+      request.status = 'closed';
+      await request.save();
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.json({ success: false, error: err });
+  }
   // console.log(requests)
 });
 
@@ -112,19 +152,23 @@ router.get('/getBidData', async (req, res) => {
   });
 
 router.delete('/deleteRequestData', (req, res) => {
-    const { id } = req.body;
-    console.log("reaches here")
-    // console.log(requestData.findById(id))
-    requestData.findByIdAndDelete(id)
-      .then(() => res.json({ success: true }))
-      .catch((err) => res.send(err));
+    const { id, userid } = req.body;
+    // only the contractor who made the request can delete it, along with any bids placed on it
+    requestData.findOneAndDelete({ _id: id, userid: userid })
+      .then((request) => {
+        if (!request) return res.json({ success: false, error: 'Request not found' });
+        return bidData.deleteMany({ reqid: id }).then(() => res.json({ success: true }));
+      })
+      .catch((err) => res.json({ success: false, error: err }));
   });
 
 router.post('/deleteBidData', (req, res) => {
-    const { id } = req.body;
-    bidData.findByIdAndDelete(id)
-      .then(() => res.json({ success: true }))
-      .catch((err) => res.send(err));
+    const { id, supplierid } = req.body;
+    // only the supplier who placed the bid can delete it
+    // accepted bids are kept as a record of the deal
+    bidData.findOneAndDelete({ _id: id, supplierid: supplierid, status: { $ne: 'accepted' } })
+      .then((bid) => res.json(bid ? { success: true } : { success: false, error: 'Bid not found' }))
+      .catch((err) => res.json({ success: false, error: err }));
   });
 
 
@@ -181,13 +225,23 @@ router.post('/deleteBidData', (req, res) => {
     // console.log("coming here")
     let data = new bidData();
   
-    const {  reqid, price} = req.body;
-  
-    
+    const {  reqid, price, supplierid, suppliername } = req.body;
+
+    if (!reqid || !(Number(price) > 0)) {
+      return res.json({ success: false, error: 'A bid needs a request and a price greater than 0' });
+    }
+
     data.reqid = reqid;
     data.price = price;
-    data.save()
-      .then(() => res.json({ success: true }))
+    data.supplierid = supplierid;
+    data.suppliername = suppliername;
+    requestData.findById(reqid)
+      .then((request) => {
+        if (!request || request.status === 'closed') {
+          return res.json({ success: false, error: 'This request is no longer open for bids' });
+        }
+        return data.save().then((bid) => res.json({ success: true, data: bid }));
+      })
       .catch((err) => res.json({ success: false, error: err }));
   });
 

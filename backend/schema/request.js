@@ -9,6 +9,8 @@ const DataSchema = new Schema(
     equip: String,
     quantity: Number,
     requiredBy: Date,
+    // closed once the contractor accepts a bid
+    status: { type: String, enum: ['open', 'closed'], default: 'open' },
   },
   { timestamps: true }
 );
