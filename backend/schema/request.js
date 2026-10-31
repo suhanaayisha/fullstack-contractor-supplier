@@ -8,6 +8,7 @@ const DataSchema = new Schema(
     username: String,  
     equip: String,
     quantity: Number,
+    requiredBy: Date,
   },
   { timestamps: true }
 );

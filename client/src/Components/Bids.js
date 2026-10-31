@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
+import { formatDate } from '../utils/date';
 
 export default function Bids() {
     const location = useLocation();
@@ -32,7 +33,7 @@ export default function Bids() {
                 {bidData.length <= 0
                     ? <div className="empty-state">No bids yet.</div>
                     : <ul className="card-grid">
-                        {bidData.map((dat) => {
+                        {bidData.map((dat, ind) => {
                             const request = reqData.find((data) => data._id === dat.reqid);
                             return (
                                 <li className="card" key={dat._id}>
@@ -42,11 +43,9 @@ export default function Bids() {
                                         {request && <>
                                             <dt>Quantity</dt>
                                             <dd>{request.quantity}</dd>
+                                            <dt>Required by</dt>
+                                            <dd>{formatDate(request.requiredBy)}</dd>
                                         </>}
-                                        <dt>Request ID</dt>
-                                        <dd>{dat.reqid}</dd>
-                                        <dt>Bid ID</dt>
-                                        <dd>{dat._id}</dd>
                                     </dl>
                                 </li>
                             );

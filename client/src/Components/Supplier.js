@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { NavLink, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
+import { formatDate } from '../utils/date';
 
 export default function Supplier() {
     const location = useLocation();
@@ -66,6 +67,8 @@ export default function Supplier() {
                                 <dl className="details">
                                     <dt>Quantity</dt>
                                     <dd>{dat.quantity}</dd>
+                                    <dt>Required by</dt>
+                                    <dd>{formatDate(dat.requiredBy)}</dd>
                                     <dt>Requested by</dt>
                                     <dd>{dat.username}</dd>
                                     <dt>Request ID</dt>

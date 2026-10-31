@@ -166,11 +166,12 @@ router.post('/deleteBidData', (req, res) => {
     // console.log("coming here")
     let data = new requestData();
   
-    const {  userid, username, equip, quantity } = req.body;
+    const {  userid, username, equip, quantity, requiredBy } = req.body;
     data.username= username;
     data.userid= userid;
     data.equip = equip;
     data.quantity = quantity;
+    data.requiredBy = requiredBy;
     data.save()
       .then(() => res.json({ success: true }))
       .catch((err) => res.json({ success: false, error: err }));

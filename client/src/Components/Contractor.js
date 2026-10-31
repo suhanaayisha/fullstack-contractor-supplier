@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { NavLink, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
+import { formatDate, today } from '../utils/date';
 
 export default function Contractor() {
     const location = useLocation();
@@ -31,12 +32,14 @@ export default function Contractor() {
         e.preventDefault();
         let equip = e.target.elements.equip.value;
         let quantity = e.target.elements.quantity.value;
+        let requiredBy = e.target.elements.requiredBy.value;
 
         axios.post('./api/putRequestData', {
             userid: userid,
             username: username,
             equip: equip,
-            quantity: quantity
+            quantity: quantity,
+            requiredBy: requiredBy
         });
     };
 
@@ -69,6 +72,10 @@ export default function Contractor() {
                             <label htmlFor="quantity">Quantity</label>
                             <input className="input" type="number" id="quantity" name="quantity" min="1" placeholder="1"></input>
                         </div>
+                        <div className="form-group">
+                            <label htmlFor="requiredBy">Required by</label>
+                            <input className="input" type="date" id="requiredBy" name="requiredBy" min={today()} required></input>
+                        </div>
                         <button className="btn">Submit request</button>
                     </form>
                 </div>
@@ -77,14 +84,14 @@ export default function Contractor() {
                 {myRequests.length <= 0
                     ? <div className="empty-state">No requests yet. Create one above.</div>
                     : <ul className="card-grid">
-                        {myRequests.map((dat) => (
+                        {myRequests.map((dat, ind) => (
                             <li className="card" key={dat._id}>
                                 <h3 className="card-title">{dat.equip}</h3>
                                 <dl className="details">
                                     <dt>Quantity</dt>
                                     <dd>{dat.quantity}</dd>
-                                    <dt>Request ID</dt>
-                                    <dd>{dat._id}</dd>
+                                    <dt>Required by</dt>
+                                    <dd>{formatDate(dat.requiredBy)}</dd>
                                 </dl>
                             </li>
                         ))}
