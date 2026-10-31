@@ -3,6 +3,7 @@ const express = require('express')
 var cors = require('cors');
 const logger = require('morgan');
 const mongoose = require('mongoose')
+require('dotenv').config({ path: path.join(__dirname, '../.env.development') })
 const bodyParser = require('body-parser') // to collect data from browser
 
 const ENV = process.env.NODE_ENV;
@@ -24,11 +25,10 @@ const bidData = require('./schema/bid')
 app.use(cors());
 const router = express.Router();
 
-const dbRoute =
-  'mongodb+srv://admin:admin@cluster0-ezyo5.mongodb.net/test?retryWrites=true&w=majority';
+const dbRoute =process.env.MONGODB_URI;
 
 // connects our back end code with the database
-mongoose.connect(dbRoute, { useNewUrlParser: true });
+mongoose.connect(dbRoute);
 
 // mongoose.connect('mongodb://localhost/fullstack-app')
 
@@ -44,62 +44,54 @@ app.use(logger('dev'));
 
 
 router.get('/getData', (req, res) => {
-    Data.find((err, data) => {
-      if (err) return res.json({ success: false, error: err });
-      return res.json({ success: true, data: data });
-    });
+    Data.find()
+    .then((data) => res.json({ success: true, data: data }))
+    .catch((err) => res.json({ success: false, error: err }));
 });
 
 
 router.get('/getUserData', async (req, res) => {
-  const users = await userData.find((err, data) => {
-      if (err) return res.json({ success: false, error: err });
-      return res.json({ success: true, data: data });
-    });
-  console.log(users)
+  userData.find()
+    .then((data) => res.json({ success: true, data: data }))
+    .catch((err) => res.json({ success: false, error: err }));
 });
 
 router.get('/getRequestData', async (req, res) => {
-  const requests = await requestData.find((err, data) => {
-      if (err) return res.json({ success: false, error: err });
-      return res.json({ success: true, data: data });
-    });
+  requestData.find()
+    .then((data) => res.json({ success: true, data: data }))
+    .catch((err) => res.json({ success: false, error: err }));
   // console.log(requests)
 });
 
 router.get('/getBidData', async (req, res) => {
-  const requests = await bidData.find((err, data) => {
-      if (err) return res.json({ success: false, error: err });
-      return res.json({ success: true, data: data });
-    });
+  bidData.find()
+    .then((data) => res.json({ success: true, data: data }))
+    .catch((err) => res.json({ success: false, error: err }));
   // console.log(requests)
 });
 
 
   router.post('/updateBidData', (req, res) => {
     const { id, update } = req.body;
-    Data.findByIdAndUpdate(id, update, (err) => {
-      if (err) return res.json({ success: false, error: err });
-      return res.json({ success: true });
-    });
+    Data.findByIdAndUpdate(id, update)
+      .then(() => res.json({ success: true }))
+      .catch((err) => res.json({ success: false, error: err }));
   });
 
 router.delete('/deleteRequestData', (req, res) => {
     const { id } = req.body;
     console.log("reaches here")
     // console.log(requestData.findById(id))
-    requestData.findByIdAndRemove(id, (err) => {
-      if (err) return res.send(err);
-      return res.json({ success: true });
-    });
+    requestData.findByIdAndDelete(id)
+      .then(() => res.json({ success: true }))
+      .catch((err) => res.send(err));
   });
 
 router.post('/deleteBidData', (req, res) => {
     const { id } = req.body;
-    bidData.findByIdAndRemove(id, (err) => {
-      if (err) return res.send(err);
-      return res.json({ success: true });
-    });
+    bidData.findByIdAndDelete(id)
+      .then(() => res.json({ success: true }))
+      .catch((err) => res.send(err));
   });
 
 
@@ -117,10 +109,9 @@ router.post('/deleteBidData', (req, res) => {
     }
     data.message = message;
     data.id = id;
-    data.save((err) => {
-      if (err) return res.json({ success: false, error: err });
-      return res.json({ success: true });
-    });
+    data.save()
+      .then(() => res.json({ success: true }))
+      .catch((err) => res.json({ success: false, error: err }));
   });
 
   router.post('/putUserData', (req, res) => {
@@ -133,10 +124,9 @@ router.post('/deleteBidData', (req, res) => {
     data.username = username;
     data.password = password;
     data.usertype = usertype
-    data.save((err) => {
-      if (err) return res.json({ success: false, error: err });
-      return res.json({ success: true });
-    });
+    data.save()
+      .then(() => res.json({ success: true }))
+      .catch((err) => res.json({ success: false, error: err }));
   });
 
   router.post('/putRequestData', (req, res) => {
@@ -148,10 +138,9 @@ router.post('/deleteBidData', (req, res) => {
     data.userid= userid;
     data.equip = equip;
     data.quantity = quantity;
-    data.save((err) => {
-      if (err) return res.json({ success: false, error: err });
-      return res.json({ success: true });
-    });
+    data.save()
+      .then(() => res.json({ success: true }))
+      .catch((err) => res.json({ success: false, error: err }));
   });
 
   router.post('/putBidData', (req, res) => {
@@ -163,10 +152,9 @@ router.post('/deleteBidData', (req, res) => {
     
     data.reqid = reqid;
     data.price = price;
-    data.save((err) => {
-      if (err) return res.json({ success: false, error: err });
-      return res.json({ success: true });
-    });
+    data.save()
+      .then(() => res.json({ success: true }))
+      .catch((err) => res.json({ success: false, error: err }));
   });
 
   app.use('/api', router);
