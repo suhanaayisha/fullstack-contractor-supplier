@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
+import Navbar from './Navbar';
 
 export default function Bids() {
+    const location = useLocation();
+    const userDetails = location.userDetails;
     const [bidData, setBidData] = useState([]);
     const [reqData, setReqData] = useState([]);
 
@@ -16,27 +19,40 @@ export default function Bids() {
 
     return (
         <div>
-            <NavLink to='/' activeClassName='is-active' exact={true}>Logout</NavLink>
-            <h1>Bids Placed</h1>
-            <ul>
+            <Navbar>
+                <NavLink to={{ pathname: '/supplier', state: userDetails }} exact={true}>Open Requests</NavLink>
+                <NavLink to={{ pathname: '/bid', userDetails }} activeClassName='is-active' exact={true}>Bids</NavLink>
+            </Navbar>
+            <main className="page">
+                <div className="page-header">
+                    <h1>Bids placed</h1>
+                    <p>All bids submitted on equipment requests.</p>
+                </div>
+
                 {bidData.length <= 0
-                    ? 'No Bids yet'
-                    : bidData.map((dat) => (
-                        <li style={{ padding: '10px' }} key={dat._id}>
-                            <span style={{ color: 'gray' }}> Bid Id: </span> {dat._id} <br />
-                            <span style={{ color: 'gray' }}> Request Id </span> {dat.reqid} <br />
-                            {reqData
-                                .filter((data) => data._id === dat.reqid)
-                                .map((data) => (
-                                    <li key={data._id}>
-                                        <span style={{ color: 'gray' }}> Requested Equipment: </span> {data.equip} <br />
-                                        <span style={{ color: 'gray' }}> Requested Quantity </span> {data.quantity} <br />
-                                    </li>
-                                ))}
-                            <span style={{ color: 'gray' }}> Price </span>  {dat.price} <br />
-                        </li>
-                    ))}
-            </ul>
+                    ? <div className="empty-state">No bids yet.</div>
+                    : <ul className="card-grid">
+                        {bidData.map((dat) => {
+                            const request = reqData.find((data) => data._id === dat.reqid);
+                            return (
+                                <li className="card" key={dat._id}>
+                                    <div className="price">{dat.price}</div>
+                                    <h3 className="card-title">{request ? request.equip : 'Request removed'}</h3>
+                                    <dl className="details">
+                                        {request && <>
+                                            <dt>Quantity</dt>
+                                            <dd>{request.quantity}</dd>
+                                        </>}
+                                        <dt>Request ID</dt>
+                                        <dd>{dat.reqid}</dd>
+                                        <dt>Bid ID</dt>
+                                        <dd>{dat._id}</dd>
+                                    </dl>
+                                </li>
+                            );
+                        })}
+                    </ul>}
+            </main>
         </div>
     );
 }

@@ -21,6 +21,30 @@ const Data = require('./data');
 const userData = require('./schema/user');
 const requestData = require('./schema/request');
 const bidData = require('./schema/bid')
+const equipmentData = require('./schema/equipment');
+
+const DEFAULT_EQUIPMENT = [
+  'Backhoe Loader',
+  'Bulldozer',
+  'Cement Mixer',
+  'Compactor',
+  'Concrete Pump',
+  'Crane',
+  'Dump Truck',
+  'Excavator',
+  'Forklift',
+  'Generator',
+  'Scaffolding',
+  'Skid Steer Loader',
+];
+
+// fill the equipment collection the first time the app runs against a database
+const seedEquipment = async () => {
+  if (await equipmentData.countDocuments() === 0) {
+    await equipmentData.insertMany(DEFAULT_EQUIPMENT.map((name) => ({ name })));
+    console.log('seeded equipment list');
+  }
+};
 
 app.use(cors());
 const router = express.Router();
@@ -36,7 +60,10 @@ let db = mongoose.connection;
 
 coll = db.requests
 
-db.once('open', () => console.log('connected to the database'));
+db.once('open', () => {
+  console.log('connected to the database');
+  seedEquipment().catch((err) => console.error('equipment seed failed:', err));
+});
 
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
@@ -61,6 +88,12 @@ router.get('/getRequestData', async (req, res) => {
     .then((data) => res.json({ success: true, data: data }))
     .catch((err) => res.json({ success: false, error: err }));
   // console.log(requests)
+});
+
+router.get('/getEquipment', (req, res) => {
+  equipmentData.find().sort({ name: 1 })
+    .then((data) => res.json({ success: true, data: data }))
+    .catch((err) => res.json({ success: false, error: err }));
 });
 
 router.get('/getBidData', async (req, res) => {

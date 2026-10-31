@@ -63,34 +63,46 @@ export default function SignUp() {
     };
 
     return (
-        <div>
-            <NavLink to='/' activeClassName='is-active' exact={true}>Login</NavLink>
-            <h2>Sign Up</h2>
-            <form onSubmit={putDataToDB} ref={formRef}>
-                <label>Username</label>
-                <input type="text" name="username" onChange={onUserChange} required autoComplete="off"></input>
-                <label>Password</label>
-                <input type="password" name="password1" required autoComplete="new-password"></input>
-                <label>Confirm Password</label>
-                <input type="password" name="password2" required></input>
-                <label>Type of User:</label>
-                <select name="usertype">
-                    <option value="contractor">Contractor</option>
-                    <option value="supplier">Supplier</option>
-                </select>
-                <button>Sign Up</button>
-            </form>
-            {invalidEmail ? <p>Username must be a valid email address</p> : ""}
-            {passwordErrors.length > 0 ? <p>Password must contain {passwordErrors.join(', ')}</p> : ""}
-            {usernameExists ? <p>Username Exists</p> : ""}
-            {passwordMatch ? <p></p> : <p>Passwords do not match</p>}
-            {successfulSubmission ?
-                <div>
-                    <div>Sign up successful.</div>
-                    <NavLink to='/' activeClassName='is-active' exact={true}>Login Here</NavLink>
-                </div>
-                :
-                " "}
+        <div className="auth-page">
+            <div className="auth-card">
+                <div className="brand">Contractor · Supplier</div>
+                <h2>Create an account</h2>
+                <p className="subtitle">Request equipment or bid on requests</p>
+                <form onSubmit={putDataToDB} ref={formRef}>
+                    <div className="form-group">
+                        <label htmlFor="username">Email</label>
+                        <input className="input" type="text" id="username" name="username" placeholder="you@example.com" onChange={onUserChange} required autoComplete="off"></input>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="password1">Password</label>
+                        <input className="input" type="password" id="password1" name="password1" required autoComplete="new-password"></input>
+                        <span className="hint">8+ characters with upper and lower case, a number and a special character</span>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="password2">Confirm password</label>
+                        <input className="input" type="password" id="password2" name="password2" required autoComplete="new-password"></input>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="usertype">I am a</label>
+                        <select className="input" id="usertype" name="usertype">
+                            <option value="contractor">Contractor</option>
+                            <option value="supplier">Supplier</option>
+                        </select>
+                    </div>
+                    <button className="btn btn-block">Sign up</button>
+                </form>
+                {invalidEmail && <div className="alert alert-error">Username must be a valid email address</div>}
+                {passwordErrors.length > 0 && <div className="alert alert-error">Password must contain {passwordErrors.join(', ')}</div>}
+                {usernameExists && <div className="alert alert-error">An account with this email already exists</div>}
+                {!passwordMatch && <div className="alert alert-error">Passwords do not match</div>}
+                {successfulSubmission &&
+                    <div className="alert alert-success">
+                        Sign up successful. <NavLink to='/' exact={true}>Log in here</NavLink>
+                    </div>}
+                <p className="auth-footer">
+                    Already have an account? <NavLink to='/' exact={true}>Log in</NavLink>
+                </p>
+            </div>
         </div>
     );
 }

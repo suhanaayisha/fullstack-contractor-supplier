@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { NavLink, useLocation } from 'react-router-dom';
+import Navbar from './Navbar';
 
 export default function Supplier() {
     const location = useLocation();
@@ -36,45 +37,52 @@ export default function Supplier() {
 
     return (
         <div>
-            <NavLink to='/supplier' activeClassName='is-active' exact={true}>Home</NavLink>
-            <NavLink to='/' activeClassName='is-active' exact={true}>Logout</NavLink> <br/>
-            <NavLink to={{
-                pathname: '/bid',
-                userDetails: {
-                    userid,
-                    username
-                }}}
-                activeClassName='is-active'
-                exact={true}> Bids</NavLink> <br/>
+            <Navbar>
+                <NavLink to={{ pathname: '/supplier', state: { userid, username } }} activeClassName='is-active' exact={true}>Open Requests</NavLink>
+                <NavLink to={{
+                    pathname: '/bid',
+                    userDetails: {
+                        userid,
+                        username
+                    }}}
+                    activeClassName='is-active'
+                    exact={true}>Bids</NavLink>
+            </Navbar>
+            <main className="page">
+                <div className="page-header">
+                    <h1>Hello, {username}</h1>
+                    <p>Browse open equipment requests and place your bids.</p>
+                </div>
 
-            <h1>Hello {username}</h1>
-            <ul>
+                {successfulSubmission && <div className="alert alert-success">Bid placed.</div>}
+
+                <h2 className="section-title">Open requests</h2>
                 {data.length <= 0
-                    ? 'NO REQUESTS YET'
-                    : data.map((dat) => (
-                        <div key={dat._id}>
-                            <li style={{ padding: '10px' }}>
-                                <span style={{ color: 'gray' }}> User Name: </span> {dat.username} <br />
-                                <span style={{ color: 'gray' }}> Request Id: </span> {dat._id} <br />
-                                <span style={{ color: 'gray' }}> Equipment: </span> {dat.equip} <br />
-                                <span style={{ color: 'gray' }}> Quantity: </span>  {dat.quantity} <br />
+                    ? <div className="empty-state">No requests yet. Check back soon.</div>
+                    : <ul className="card-grid">
+                        {data.map((dat) => (
+                            <li className="card" key={dat._id}>
+                                <h3 className="card-title">{dat.equip}</h3>
+                                <dl className="details">
+                                    <dt>Quantity</dt>
+                                    <dd>{dat.quantity}</dd>
+                                    <dt>Requested by</dt>
+                                    <dd>{dat.username}</dd>
+                                    <dt>Request ID</dt>
+                                    <dd>{dat._id}</dd>
+                                </dl>
+                                <form className="card-actions inline-form" onSubmit={putDataToDB}>
+                                    <input type="hidden" name="reqid" value={dat._id}/>
+                                    <div className="form-group">
+                                        <label htmlFor={`price-${dat._id}`}>Your price</label>
+                                        <input className="input" type="number" id={`price-${dat._id}`} name="price" min="0" placeholder="0"></input>
+                                    </div>
+                                    <button className="btn">Place bid</button>
+                                </form>
                             </li>
-                            <form onSubmit={putDataToDB}>
-                                <input type="checkbox" name="reqid" value={dat._id}/>
-                                <label>Price</label>
-                                <input type="number" name="price"></input>
-                                <button>Place Your Bids</button>
-                            </form>
-                        </div>
-                    ))}
-                {successfulSubmission ?
-                    <div>
-                        <div>Bid Placed.</div>
-                    </div>
-                    :
-                    " "
-                }
-            </ul>
+                        ))}
+                    </ul>}
+            </main>
         </div>
     );
 }
