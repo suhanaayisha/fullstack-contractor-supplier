@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useHistory } from 'react-router-dom';
+import { isValidEmail, getPasswordErrors } from '../utils/validation';
 
 export default function Login() {
     const history = useHistory();
+    const [invalidEmail, setInvalidEmail] = useState(false);
+    const [passwordErrors, setPasswordErrors] = useState([]);
     const [isFetching, setIsFetching] = useState(false);
     const [users, setUsers] = useState([]);
     const [userExists, setUserExists] = useState(true);
@@ -24,6 +27,14 @@ export default function Login() {
 
         let username = e.target.elements.username.value;
         let password = e.target.elements.password.value;
+
+        const emailOk = isValidEmail(username);
+        const errors = getPasswordErrors(password);
+        setInvalidEmail(!emailOk);
+        setPasswordErrors(errors);
+        if (!emailOk || errors.length > 0) {
+            return false;
+        }
 
         if (isFetching) {
             if (users.length > 0 && users.find(user => user.username === username)) {
@@ -61,6 +72,8 @@ export default function Login() {
                 <input type="password" name="password" autoComplete="new-password"></input>
                 <button>Login</button>
             </form>
+            {invalidEmail ? <p>Username must be a valid email address</p> : ""}
+            {passwordErrors.length > 0 ? <p>Password must contain {passwordErrors.join(', ')}</p> : ""}
             {userExists ? <p></p> : <p>User Does Not Exist. Please Sign Up</p>}
             {passwordMatch ? <p></p> : <p> Username and Password does not match</p>}
             <NavLink to='/signup' activeClassName='is-active' exact={true}>Sign up</NavLink>

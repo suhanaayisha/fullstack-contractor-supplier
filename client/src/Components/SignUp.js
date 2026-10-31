@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { NavLink } from 'react-router-dom';
+import { isValidEmail, getPasswordErrors } from '../utils/validation';
 
 export default function SignUp() {
     const [users, setUsers] = useState([]);
     const [passwordMatch, setPasswordMatch] = useState(true);
+    const [invalidEmail, setInvalidEmail] = useState(false);
+    const [passwordErrors, setPasswordErrors] = useState([]);
     const [usernameExists, setUsernameExists] = useState(false);
     const [isFetching, setIsFetching] = useState(false);
     const [successfulSubmission, setSuccessfulSubmission] = useState(false);
@@ -26,6 +29,15 @@ export default function SignUp() {
         let password1 = e.target.elements.password1.value;
         let password2 = e.target.elements.password2.value;
         let usertype = e.target.elements.usertype.value;
+
+        const emailOk = isValidEmail(username);
+        const errors = getPasswordErrors(password1);
+        setInvalidEmail(!emailOk);
+        setPasswordErrors(errors);
+        if (!emailOk || errors.length > 0) {
+            return false;
+        }
+
         if (users.find((user) => user.username === username)) {
             return false;
         }
@@ -68,6 +80,8 @@ export default function SignUp() {
                 </select>
                 <button>Sign Up</button>
             </form>
+            {invalidEmail ? <p>Username must be a valid email address</p> : ""}
+            {passwordErrors.length > 0 ? <p>Password must contain {passwordErrors.join(', ')}</p> : ""}
             {usernameExists ? <p>Username Exists</p> : ""}
             {passwordMatch ? <p></p> : <p>Passwords do not match</p>}
             {successfulSubmission ?
