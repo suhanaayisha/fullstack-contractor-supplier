@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+import { api, getSession } from '../utils/auth';
 import Navbar from './Navbar';
 import { formatDate } from '../utils/date';
 import { currencySymbol } from '../utils/currency';
 
 export default function Supplier() {
-    const location = useLocation();
-    const userid = location.state?.userid || location.userDetails?.userid;
-    const username = location.state?.username || location.userDetails?.username;
+    const { userid, username } = getSession() || {};
     const [data, setData] = useState([]);
     const [bids, setBids] = useState([]);
     const [isFetching, setIsFetching] = useState(false);
@@ -16,13 +14,11 @@ export default function Supplier() {
     const [bidError, setBidError] = useState(null);
 
     useEffect(() => {
-        fetch('./api/getRequestData')
-            .then((data) => data.json())
-            .then((res) => setData(res.data));
-        fetch(`./api/getBidData?supplierid=${encodeURIComponent(userid)}`)
-            .then((data) => data.json())
+        api.get('./api/getRequestData')
+            .then((res) => setData(res.data.data));
+        api.get('./api/getBidData')
             .then((res) => {
-                setBids(res.data);
+                setBids(res.data.data);
                 setIsFetching(true);
             });
     }, [userid]);
@@ -39,11 +35,9 @@ export default function Supplier() {
             return;
         }
         if (isFetching) {
-            axios.post('./api/putBidData', {
+            api.post('./api/putBidData', {
                 reqid: reqid,
-                price: price,
-                supplierid: userid,
-                suppliername: username
+                price: price
             })
                 .then((res) => {
                     if (!res.data.success) throw new Error(res.data.error);
@@ -65,15 +59,8 @@ export default function Supplier() {
     return (
         <div>
             <Navbar>
-                <NavLink to={{ pathname: '/supplier', state: { userid, username } }} activeClassName='is-active' exact={true}>Open Requests</NavLink>
-                <NavLink to={{
-                    pathname: '/bid',
-                    userDetails: {
-                        userid,
-                        username
-                    }}}
-                    activeClassName='is-active'
-                    exact={true}>Bids</NavLink>
+                <NavLink to='/supplier' activeClassName='is-active' exact={true}>Open Requests</NavLink>
+                <NavLink to='/bid' activeClassName='is-active' exact={true}>Bids</NavLink>
             </Navbar>
             <main className="page">
                 <div className="page-header">

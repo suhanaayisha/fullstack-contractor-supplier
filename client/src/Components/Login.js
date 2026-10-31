@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { NavLink, useHistory } from 'react-router-dom';
+import { saveSession } from '../utils/auth';
 import { isValidEmail, getPasswordErrors } from '../utils/validation';
 
 export default function Login() {
@@ -10,6 +12,7 @@ export default function Login() {
     const [users, setUsers] = useState([]);
     const [userExists, setUserExists] = useState(true);
     const [passwordMatch, setPasswordMatch] = useState(true);
+    const [loginError, setLoginError] = useState(null);
 
     useEffect(() => {
         fetch('./api/getUserData')
@@ -24,6 +27,7 @@ export default function Login() {
         e.preventDefault();
         setUserExists(true);
         setPasswordMatch(true);
+        setLoginError(null);
 
         let username = e.target.elements.username.value;
         let password = e.target.elements.password.value;
@@ -39,28 +43,20 @@ export default function Login() {
         }
 
         if (isFetching) {
-            if (users.length > 0 && users.find(user => user.username === username)) {
-                const user = users.find(user => user.username === username && user.password === password);
-                if (user) {
-                    if (user.usertype === "contractor") {
-                        history.push('/contractor', { userid: user._id, username: user.username });
+            // the password is checked on the server; only the user's id, name and type come back
+            axios.post('./api/login', { username: username, password: password })
+                .then((res) => {
+                    if (!res.data.success) {
+                        if (res.data.error === 'user_not_found') setUserExists(false);
+                        else if (res.data.error === 'wrong_password') setPasswordMatch(false);
+                        else setLoginError('Could not log in. Please try again.');
+                        return;
                     }
-                    else if (user.usertype === "supplier") {
-                        history.push('/supplier', { userid: user._id, username: user.username });
-                    }
-                    else {
-                        history.push('/supplier', { userid: user._id });
-                    }
-                }
-                else {
-                    setPasswordMatch(false);
-                    return false;
-                }
-            }
-            else {
-                setUserExists(false);
-                return false;
-            }
+                    const user = res.data.data;
+                    saveSession(user);
+                    history.push(user.usertype === 'contractor' ? '/contractor' : '/supplier');
+                })
+                .catch(() => setLoginError('Could not log in. Please try again.'));
         }
     };
 
@@ -85,6 +81,7 @@ export default function Login() {
                 {passwordErrors.length > 0 && <div className="alert alert-error">Password must contain {passwordErrors.join(', ')}</div>}
                 {!userExists && <div className="alert alert-error">User does not exist. Please sign up.</div>}
                 {!passwordMatch && <div className="alert alert-error">Username and password do not match</div>}
+                {loginError && <div className="alert alert-error">{loginError}</div>}
                 <p className="auth-footer">
                     Don't have an account? <NavLink to='/signup' exact={true}>Sign up</NavLink>
                 </p>

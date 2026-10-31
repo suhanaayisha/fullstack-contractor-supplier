@@ -82,13 +82,19 @@ export default function SignUp() {
                         <label htmlFor="password2">Confirm password</label>
                         <input className="input" type="password" id="password2" name="password2" required autoComplete="new-password"></input>
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="usertype">I am a</label>
-                        <select className="input" id="usertype" name="usertype">
-                            <option value="contractor">Contractor</option>
-                            <option value="supplier">Supplier</option>
-                        </select>
-                    </div>
+                    <fieldset className="form-group role-picker">
+                        <legend>I am a</legend>
+                        <div className="segmented">
+                            <label className="segmented-option">
+                                <input type="radio" name="usertype" value="contractor" defaultChecked />
+                                <span>Contractor</span>
+                            </label>
+                            <label className="segmented-option">
+                                <input type="radio" name="usertype" value="supplier" />
+                                <span>Supplier</span>
+                            </label>
+                        </div>
+                    </fieldset>
                     <button className="btn btn-block">Sign up</button>
                 </form>
                 {invalidEmail && <div className="alert alert-error">Username must be a valid email address</div>}

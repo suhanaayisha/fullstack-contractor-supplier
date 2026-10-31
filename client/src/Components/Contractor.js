@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+import { api, getSession } from '../utils/auth';
 import Navbar from './Navbar';
 import { formatDate, today } from '../utils/date';
 import ConfirmModal from './ConfirmModal';
@@ -8,9 +8,7 @@ import { FiTrash2 } from 'react-icons/fi';
 import { formatPrice } from '../utils/currency';
 
 export default function Contractor() {
-    const location = useLocation();
-    const userid = location.state?.userid;
-    const username = location.state?.username;
+    const { userid, username } = getSession() || {};
     const [data, setData] = useState([]);
     const [equipment, setEquipment] = useState([]);
     const [requestToDelete, setRequestToDelete] = useState(null);
@@ -30,12 +28,10 @@ export default function Contractor() {
 
     useEffect(() => {
         const getDataFromDb = () => {
-            fetch(`./api/getRequestData?userid=${encodeURIComponent(userid)}`)
-                .then((data) => data.json())
-                .then((res) => setData(res.data));
-            fetch(`./api/getBidData?contractorid=${encodeURIComponent(userid)}`)
-                .then((data) => data.json())
-                .then((res) => setBids(res.data));
+            api.get('./api/getRequestData')
+                .then((res) => setData(res.data.data));
+            api.get('./api/getBidData')
+                .then((res) => setBids(res.data.data));
         };
         getDataFromDb();
         const interval = setInterval(getDataFromDb, 1000);
@@ -48,9 +44,7 @@ export default function Contractor() {
         let quantity = e.target.elements.quantity.value;
         let requiredBy = e.target.elements.requiredBy.value;
 
-        axios.post('./api/putRequestData', {
-            userid: userid,
-            username: username,
+        api.post('./api/putRequestData', {
             equip: equip,
             quantity: quantity,
             requiredBy: requiredBy
@@ -65,7 +59,7 @@ export default function Contractor() {
     const deleteRequest = () => {
         setDeleting(true);
         setDeleteError(null);
-        axios.delete('./api/deleteRequestData', { data: { id: requestToDelete._id, userid: userid } })
+        api.delete('./api/deleteRequestData', { data: { id: requestToDelete._id } })
             .then((res) => {
                 if (!res.data.success) throw new Error();
                 setData((requests) => requests.filter((request) => request._id !== requestToDelete._id));
@@ -84,7 +78,7 @@ export default function Contractor() {
         const { bid, status } = bidDecision;
         setDeciding(true);
         setDecisionError(null);
-        axios.post('./api/updateBidStatus', { id: bid._id, status: status, userid: userid })
+        api.post('./api/updateBidStatus', { id: bid._id, status: status })
             .then((res) => {
                 if (!res.data.success) {
                     setDecisionError(typeof res.data.error === 'string' ? res.data.error : 'Could not update the bid. Please try again.');
@@ -110,7 +104,7 @@ export default function Contractor() {
     return (
         <div>
             <Navbar>
-                <NavLink to={{ pathname: '/contractor', state: location.state }} activeClassName='is-active' exact={true}>My Requests</NavLink>
+                <NavLink to='/contractor' activeClassName='is-active' exact={true}>My Requests</NavLink>
             </Navbar>
             <main className="page">
                 <div className="page-header">

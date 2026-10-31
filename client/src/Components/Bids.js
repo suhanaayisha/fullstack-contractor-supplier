@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+import { api } from '../utils/auth';
 import Navbar from './Navbar';
 import { formatDate } from '../utils/date';
 import ConfirmModal from './ConfirmModal';
@@ -8,9 +8,6 @@ import { formatPrice } from '../utils/currency';
 import { FiTrash2 } from 'react-icons/fi';
 
 export default function Bids() {
-    const location = useLocation();
-    const userDetails = location.userDetails;
-    const supplierid = userDetails?.userid;
     const [bidData, setBidData] = useState([]);
     const [reqData, setReqData] = useState([]);
     const [bidToDelete, setBidToDelete] = useState(null);
@@ -18,13 +15,11 @@ export default function Bids() {
     const [deleteError, setDeleteError] = useState(null);
 
     useEffect(() => {
-        fetch(`./api/getBidData?supplierid=${encodeURIComponent(supplierid)}`)
-            .then((data) => data.json())
-            .then((res) => setBidData(res.data));
-        fetch('./api/getRequestData')
-            .then((data) => data.json())
-            .then((res) => setReqData(res.data));
-    }, [supplierid]);
+        api.get('./api/getBidData')
+            .then((res) => setBidData(res.data.data));
+        api.get('./api/getRequestData')
+            .then((res) => setReqData(res.data.data));
+    }, []);
 
     const closeDeleteModal = () => {
         setBidToDelete(null);
@@ -34,7 +29,7 @@ export default function Bids() {
     const deleteBid = () => {
         setDeleting(true);
         setDeleteError(null);
-        axios.post('./api/deleteBidData', { id: bidToDelete._id, supplierid: supplierid })
+        api.post('./api/deleteBidData', { id: bidToDelete._id })
             .then((res) => {
                 if (!res.data.success) throw new Error();
                 setBidData((bids) => bids.filter((bid) => bid._id !== bidToDelete._id));
@@ -47,8 +42,8 @@ export default function Bids() {
     return (
         <div>
             <Navbar>
-                <NavLink to={{ pathname: '/supplier', state: userDetails }} exact={true}>Open Requests</NavLink>
-                <NavLink to={{ pathname: '/bid', userDetails }} activeClassName='is-active' exact={true}>Bids</NavLink>
+                <NavLink to='/supplier' exact={true}>Open Requests</NavLink>
+                <NavLink to='/bid' activeClassName='is-active' exact={true}>Bids</NavLink>
             </Navbar>
             <main className="page">
                 <div className="page-header">

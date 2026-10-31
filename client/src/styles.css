@@ -503,3 +503,78 @@ h1, h2, h3 {
 .btn-success:hover {
     background: #187047;
 }
+
+/* ---------- Contractor / Supplier toggle on sign up ---------- */
+
+.role-picker {
+    border: none;
+    padding: 0;
+    margin: 0 0 16px;
+    min-width: 0;
+}
+
+.role-picker legend {
+    padding: 0;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.segmented {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    padding: 4px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.segmented-option {
+    position: relative;
+    cursor: pointer;
+}
+
+/* keep the radio focusable for keyboard users, but hide it visually */
+.segmented-option input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+.segmented-option span {
+    display: block;
+    padding: 8px 12px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--muted);
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.segmented-option:hover span {
+    color: var(--text);
+}
+
+.segmented-option input:checked + span {
+    color: var(--primary);
+    background: var(--surface);
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.12);
+}
+
+.segmented-option input:focus-visible + span {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* consistent look for remaining dropdowns (e.g. equipment) instead of the native control */
+select.input {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 36px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7489' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    cursor: pointer;
+}
