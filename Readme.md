@@ -4,6 +4,8 @@ A small full-stack marketplace where **contractors** request construction equipm
 
 > **Note:** This started as a trial project to practise full-stack development with React, Node/Express and MongoDB. See [Known limitations and next steps](#known-limitations-and-next-steps) for what I'd improve next.
 
+> **Live demo:** it's hosted on Render's free plan, which sleeps when nobody uses the app. The first visit after a while takes about a minute to load.
+
 ## What it does
 
 **Contractors** can:
@@ -106,6 +108,16 @@ Or start both from the root folder with `npm run dev`.
 Open **http://localhost:3000**, sign up as a contractor or a supplier, and log in.
 
 The first time the backend connects to an empty database, it adds a starter list of equipment (Excavator, Crane, Bulldozer and others). Change that list in the `equipment` collection in MongoDB.
+
+## Deploying to Render
+
+The app deploys as one Render web service: Express serves the API and the built React app from the same URL. The setup is in [`render.yaml`](render.yaml).
+
+1. In the Render dashboard, choose **New → Blueprint** and select this repository.
+2. When asked, enter `MONGODB_URI`. Render generates `JWT_SECRET` for you.
+3. In MongoDB Atlas, under **Network Access**, allow connections from `0.0.0.0/0`, because Render's free plan has no fixed IP addresses.
+
+On the free plan, the service sleeps when it isn't used, so the first visit after a while can take about a minute.
 
 ## API overview
 

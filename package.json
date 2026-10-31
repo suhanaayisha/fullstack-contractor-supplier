@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "npm install --prefix backend && npm install --prefix client",
+    "build": "npm run build --prefix client",
     "dev": "concurrently \"cd backend && node server.js\" \"cd client && npm start\"",
-    "start": "node backend/server.js",
-    "heroku-postbuild": "cd client && npm install && npm run build"
+    "start": "node backend/server.js"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +16,6 @@
     "concurrently": "^5.0.0"
   },
   "engines": {
-    "node": "10.x"
+    "node": ">=20.19.0"
   }
 }
