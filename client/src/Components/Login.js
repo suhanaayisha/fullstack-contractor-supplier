@@ -90,9 +90,9 @@ export default class Login extends React.Component {
                 <h2>Login</h2>
                 <form onSubmit={this.onSubmit}>
                     <label>Username</label>
-                    <input type="text" name="username"></input>
+                    <input type="text" name="username" autoComplete="off"></input>
                     <label>Password</label>
-                    <input type="password" name="password"></input>
+                    <input type="password" name="password" autoComplete="new-password"></input>
                     <button>Login</button>
                 </form>
                 { this.componentDidUpdate() }

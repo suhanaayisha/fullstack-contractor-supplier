@@ -94,9 +94,9 @@ export default class SignUp extends React.Component {
                 <h2>Sign Up</h2>
                 <form onSubmit={this.putDataToDB} ref={form => this.form = form}>
                     <label>Username</label>
-                    <input type="text" name="username" onChange={this.onUserChange} required></input>
+                    <input type="text" name="username" onChange={this.onUserChange} required autoComplete="off"></input>
                     <label>Password</label>
-                    <input type="password" name="password1" required></input>
+                    <input type="password" name="password1" required autoComplete="new-password"></input>
                     <label>Confirm Password</label>
                     <input type="password" name="password2" onChange={this.onPassChange} required></input>
                     <label>Type of User:</label>
